@@ -88,7 +88,7 @@ Launch the project at
 
 The project is a single-page React app. The important systems:
 
-- **State architecture** — one context value (`mode: `funnel`` \| `theory``)
+- **State architecture** — one context value (`mode: "funnel" | "theory"`)
   owned by `ModeProvider`. Sections read it via `useMode` and re-render. Each
   section's *persuasive* machinery (countdown, transcript cycle, claimant
   counter) is local state — deliberately not lifted, because it is meant to be
