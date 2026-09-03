@@ -1,29 +1,20 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { SIMULACRUM_ORDERS, orderIndexForProgress } from "../lib/simulacrum";
 
-const STAGES = [
-  {
-    roman: "I",
-    name: "Faithful Image",
-    desc: "It is the reflection of a basic reality.",
-  },
-  {
-    roman: "II",
-    name: "Perversion",
-    desc: "It masks and denatures a basic reality.",
-  },
-  {
-    roman: "III",
-    name: "Pretense",
-    desc: "It masks the absence of a basic reality.",
-  },
-  {
-    roman: "IV",
-    name: "Pure Simulacrum",
-    desc: "It bears no relation to reality whatever: it is its own pure simulacrum.",
-  },
-];
-
+/**
+ * A fixed progress dock along the bottom of the viewport.
+ *
+ * It does two things at once:
+ * 1. It is a scroll-position progress bar (utilitarian).
+ * 2. It maps that scroll position onto the four orders of the simulacrum,
+ *    so scrolling literally walks the visitor through the Baudrillardian
+ *    taxonomy the page is built from. The roman numeral is the stage; the
+ *    name + quotation is its definition.
+ *
+ * This is the clearest single place where the conceptual thesis is exposed
+ * through the interface rather than only in the copy.
+ */
 export default function SimulacraTracker() {
   const [progress, setProgress] = useState(0);
 
@@ -32,7 +23,8 @@ export default function SimulacraTracker() {
       const h = document.documentElement;
       const scrollTop = h.scrollTop || document.body.scrollTop;
       const scrollHeight = h.scrollHeight - h.clientHeight;
-      const pct = scrollHeight > 0 ? Math.min(1, Math.max(0, scrollTop / scrollHeight)) : 0;
+      const pct =
+        scrollHeight > 0 ? Math.min(1, Math.max(0, scrollTop / scrollHeight)) : 0;
       setProgress(pct);
     };
     onScroll();
@@ -40,8 +32,8 @@ export default function SimulacraTracker() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const idx = Math.min(3, Math.floor(progress * 4));
-  const stage = STAGES[idx];
+  const idx = orderIndexForProgress(progress);
+  const stage = SIMULACRUM_ORDERS[idx];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-ink/95 backdrop-blur border-t border-line">
@@ -62,7 +54,7 @@ export default function SimulacraTracker() {
           {stage.desc}
         </span>
         <div className="hidden md:flex items-center gap-1 ml-auto shrink-0">
-          {STAGES.map((s, i) => (
+          {SIMULACRUM_ORDERS.map((s, i) => (
             <div
               key={s.roman}
               className={`w-6 h-1.5 rounded-full transition-colors ${

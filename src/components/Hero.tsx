@@ -1,43 +1,51 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, Volume2, Maximize2 } from "lucide-react";
 import Annotation from "./Annotation";
+import {
+  HERO_TRANSCRIPT,
+  LINE_ADVANCE_MS,
+  TOTAL_SECONDS,
+  WINDOW_SECONDS,
+} from "../content/hero";
 
-const TRANSCRIPT = [
-  "...and by the time you finish watching this, you'll already believe it worked...",
-  "...I'm not selling you a product. I'm selling you the feeling of having wanted one...",
-  "...this presentation has never been watched live. It has also never not been live...",
-  "...somewhere, a version of you already bought this. You're just catching up to her...",
-  "...the results are real. The reality behind the results is optional...",
-];
-
+/**
+ * The hero section: a headline that still gestures at a referent, and the
+ * simulated "live presentation" player beneath it.
+ *
+ * The player is the centerpiece *lie*. When "playing", two intervals run:
+ * one advances the elapsed wall-clock second by second, another cycles the
+ * transcript line. There is no media element and no audio — the broadcast is
+ * staged entirely from state and CSS. The "remaining" time is computed against
+ * a 90-second window (`elapsed % WINDOW_SECONDS`), so the countdown recedes
+ * toward a horizon that moves away as fast as it's approached.
+ */
 export default function Hero() {
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [lineIdx, setLineIdx] = useState(0);
-  const raf = useRef<number | null>(null);
 
   useEffect(() => {
     if (!playing) return;
-    const id = setInterval(() => {
-      setElapsed((e) => e + 1);
-    }, 1000);
-    const line = setInterval(() => {
-      setLineIdx((i) => (i + 1) % TRANSCRIPT.length);
-    }, 3200);
+    const clock = setInterval(() => setElapsed((e) => e + 1), 1000);
+    const line = setInterval(
+      () => setLineIdx((i) => (i + 1) % HERO_TRANSCRIPT.length),
+      LINE_ADVANCE_MS,
+    );
     return () => {
-      clearInterval(id);
+      clearInterval(clock);
       clearInterval(line);
     };
   }, [playing]);
 
-  // "Remaining" time is a fixed illusion that never resolves — it recalculates
-  // toward a horizon that recedes exactly as fast as you approach it.
-  const remaining = 17 * 60 + 42 - (elapsed % 90);
+  // The "remaining" illusion: a base duration (17:42) minus a term that
+  // cycles every 90s, so it never resolves to zero.
+  const remaining = TOTAL_SECONDS - (elapsed % WINDOW_SECONDS);
   const mm = Math.max(0, Math.floor(remaining / 60)).toString().padStart(2, "0");
   const ss = Math.max(0, remaining % 60).toString().padStart(2, "0");
   const emm = Math.floor(elapsed / 60).toString().padStart(2, "0");
   const ess = (elapsed % 60).toString().padStart(2, "0");
+  const progressWidth = playing ? `${((elapsed % WINDOW_SECONDS) / WINDOW_SECONDS) * 100}%` : "0%";
 
   return (
     <section className="relative pt-28 pb-20 px-4 sm:px-6 overflow-hidden">
@@ -46,17 +54,21 @@ export default function Hero() {
         style={{ background: "radial-gradient(circle, #f4c400 0%, transparent 60%)" }}
       />
       <div className="relative max-w-5xl mx-auto text-center">
-        <Annotation label="Order I — The Faithful Image" className="absolute -top-6 -left-4 sm:-left-16" align="left">
+        <Annotation
+          label="Order I — The Faithful Image"
+          className="absolute -top-6 -left-4 sm:-left-16"
+          align="left"
+        >
           A headline that still gestures at a referent. It claims to reflect something. This is the last honest sentence on the page.
         </Annotation>
 
         <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-widest uppercase text-yellow border border-yellow/40 rounded-full px-3 py-1 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-yellow pulse-glow" />
-          847,213 people are "watching" right now
+          847,213 people are &quot;watching&quot; right now
         </div>
 
         <h1 className="font-display leading-[0.95] text-[13vw] sm:text-6xl md:text-7xl tracking-tight text-paper">
-          THE SECRET ISN'T
+          THE SECRET ISN&apos;T
           <br />
           <span className="text-yellow">HIDDEN.</span>{" "}
           <span className="text-red">IT WAS NEVER THERE.</span>
@@ -69,8 +81,12 @@ export default function Hero() {
         </p>
 
         <div className="relative mt-14 max-w-3xl mx-auto">
-          <Annotation label="Order II — Perversion of Reality" className="absolute -right-6 sm:-right-56 top-10" align="right">
-            A recorded video wearing the costume of a live event. The "remaining time" is not a countdown. It is choreography.
+          <Annotation
+            label="Order II — Perversion of Reality"
+            className="absolute -right-6 sm:-right-56 top-10"
+            align="right"
+          >
+            A recorded video wearing the costume of a live event. The &quot;remaining time&quot; is not a countdown. It is choreography.
           </Annotation>
 
           <div className="relative rounded-lg overflow-hidden border border-line shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)]">
@@ -109,7 +125,7 @@ export default function Hero() {
                       transition={{ duration: 0.4 }}
                       className="font-mono text-xs sm:text-sm text-paper/90 text-center"
                     >
-                      {TRANSCRIPT[lineIdx]}
+                      {HERO_TRANSCRIPT[lineIdx]}
                     </motion.p>
                   </div>
                 </>
@@ -117,13 +133,17 @@ export default function Hero() {
             </div>
 
             <div className="bg-ink-2 px-4 py-3 flex items-center gap-3">
-              <button onClick={() => setPlaying((p) => !p)} className="text-paper/80 hover:text-yellow">
+              <button
+                onClick={() => setPlaying((p) => !p)}
+                aria-label={playing ? "Pause" : "Play"}
+                className="text-paper/80 hover:text-yellow"
+              >
                 {playing ? <Pause size={16} /> : <Play size={16} />}
               </button>
               <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
                 <div
                   className="h-full bg-yellow transition-all duration-1000"
-                  style={{ width: playing ? `${((elapsed % 90) / 90) * 100}%` : "0%" }}
+                  style={{ width: progressWidth }}
                 />
               </div>
               <span className="font-mono text-[10px] text-muted w-14 text-right">

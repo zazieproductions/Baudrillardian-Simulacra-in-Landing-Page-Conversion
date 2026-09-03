@@ -1,0 +1,38 @@
+name: Feature / idea request
+description: Propose a new capability or a creative direction for the piece.
+title: "[Idea] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an experimental artwork, so "features" are often conceptual
+        moves as much as technical ones. Describe the effect you want, and the
+        mechanism if you have one.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What's the idea?
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change?
+      options:
+        - Interface / interaction
+        - Audio / visual system
+        - Content / copy
+        - New concept or reading
+        - Tooling / docs
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why does it matter to the piece?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes / constraints
+      description: Anything about feasibility, browser APIs, or performance to consider.

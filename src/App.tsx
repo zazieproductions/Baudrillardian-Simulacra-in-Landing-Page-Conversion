@@ -1,4 +1,5 @@
-import { ModeProvider, useMode } from "./lib/ModeContext";
+import { ModeProvider } from "./components/ModeProvider";
+import { useMode } from "./lib/mode";
 import ModeToggle from "./components/ModeToggle";
 import SimulacraTracker from "./components/SimulacraTracker";
 import Hero from "./components/Hero";
@@ -8,6 +9,10 @@ import Guarantee from "./components/Guarantee";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 
+/**
+ * Sticky wordmark, top-left. Only its accent color depends on the current
+ * mode so the branding stays constant while the register shifts.
+ */
 function TopBar() {
   const { mode } = useMode();
   return (
@@ -20,10 +25,19 @@ function TopBar() {
   );
 }
 
+/**
+ * The four-section page. In `theory` mode the root gains the scanline overlay
+ * and images are desaturated/contrasted so the critical register is legible
+ * at a glance even before the annotations fade in.
+ */
 function Page() {
   const { mode } = useMode();
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${mode === "theory" ? "scanline relative" : ""}`}>
+    <div
+      className={`min-h-screen transition-colors duration-500 ${
+        mode === "theory" ? "scanline relative" : ""
+      }`}
+    >
       <div className="grain" />
       <TopBar />
       <ModeToggle />

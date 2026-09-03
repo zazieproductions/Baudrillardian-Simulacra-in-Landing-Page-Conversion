@@ -1,14 +1,28 @@
+import { type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMode } from "../lib/ModeContext";
+import { useMode } from "../lib/mode";
 
 interface AnnotationProps {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   align?: "left" | "right";
 }
 
-export default function Annotation({ label, children, className = "", align = "right" }: AnnotationProps) {
+/**
+ * The "theory" annotations that reveal the construction beneath each section.
+ *
+ * Rendered only in `theory` mode. They look like archival marginalia — a
+ * paper tag with a hard offset shadow and a pitched baseline — rather than a
+ * tooltip, so they read as an alternative register of the page rather than a
+ * UI affordance.
+ */
+export default function Annotation({
+  label,
+  children,
+  className = "",
+  align = "right",
+}: AnnotationProps) {
   const { mode } = useMode();
   return (
     <AnimatePresence>
