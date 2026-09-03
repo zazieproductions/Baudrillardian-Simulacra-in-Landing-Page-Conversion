@@ -1,53 +1,40 @@
 import { useEffect, useState } from "react";
 import { Star, ShieldAlert } from "lucide-react";
 import Annotation from "./Annotation";
-import { useMode } from "../lib/ModeContext";
+import { useMode } from "../lib/mode";
+import { TESTIMONIALS } from "../content/testimonials";
 
-const PEOPLE = [
-  {
-    img: "/images/testimonial-1.jpg",
-    identities: [
-      { name: "Jessica R.", role: "Verified Buyer, Austin TX", quote: "I didn't believe it until I did. Now I don't believe anything else." },
-      { name: "Model #4471-A", role: "Licensed stock asset, expires never", quote: "This likeness has appeared in 212 other testimonials since 2019." },
-    ],
-  },
-  {
-    img: "/images/testimonial-2.jpg",
-    identities: [
-      { name: "Marcus T.", role: "Verified Buyer, 6-figure earner", quote: "The results speak for themselves, which is convenient, because I can't." },
-      { name: "Getty-Adjacent Face", role: "Royalty-free, all rights simulated", quote: "I was smiling before this campaign existed and I'll be smiling after." },
-    ],
-  },
-  {
-    img: "/images/testimonial-3.jpg",
-    identities: [
-      { name: "Dana K.", role: "Verified Buyer, 'changed my life'", quote: "It replaced a need I didn't have with a certainty I can't shake." },
-      { name: "Composite Persona", role: "Assembled from focus-group data", quote: "My testimony was A/B tested against a warmer version of itself. I lost." },
-    ],
-  },
-  {
-    img: "/images/testimonial-4.jpg",
-    identities: [
-      { name: "Harold V.", role: "Verified Buyer, skeptic-turned-fan", quote: "I came here to disprove it. The page was more convincing than my doubt." },
-      { name: "Face on File #90", role: "No relation to any real transaction", quote: "There is no purchase behind this smile. There never needed to be." },
-    ],
-  },
-];
-
-function TestimonialCard({ person, index }: { person: (typeof PEOPLE)[number]; index: number }) {
+/**
+ * A single testimonial card.
+ *
+ * In `funnel` mode it always shows the "verified buyer" identity. In `theory`
+ * mode it cycles on a per-card interval between the buyer and the constructed
+ * identity underneath (stock model / composite persona / face on file), and
+ * badges itself as "unverifiable". The glitch class is applied to the text on
+ * the *constructed* identity so the reveal reads as a decoding, not a static
+ * correction.
+ */
+function TestimonialCard({
+  person,
+  index,
+}: {
+  person: (typeof TESTIMONIALS)[number];
+  index: number;
+}) {
   const { mode } = useMode();
   const [flip, setFlip] = useState(false);
 
+  // Only run the identity-cycle while in theory mode. We don't reset `flip`
+  // when leaving theory; instead the output below pins to identity 0, so the
+  // flip bit is simply dormant until the visitor re-enters theory mode.
   useEffect(() => {
-    if (mode !== "theory") {
-      setFlip(false);
-      return;
-    }
+    if (mode !== "theory") return;
     const t = setInterval(() => setFlip((f) => !f), 2600 + index * 400);
     return () => clearInterval(t);
   }, [mode, index]);
 
-  const identity = person.identities[flip ? 1 : 0];
+  const identityIdx = mode === "theory" ? (flip ? 1 : 0) : 0;
+  const identity = person.identities[identityIdx];
 
   return (
     <div className="relative bg-ink-2 border border-line rounded-lg p-5 flex flex-col gap-3">
@@ -60,7 +47,9 @@ function TestimonialCard({ person, index }: { person: (typeof PEOPLE)[number]; i
         <img
           src={person.img}
           alt={identity.name}
-          className={`w-12 h-12 rounded-full object-cover border border-line ${mode === "theory" ? "grayscale" : ""}`}
+          className={`w-12 h-12 rounded-full object-cover border border-line ${
+            mode === "theory" ? "grayscale" : ""
+          }`}
         />
         <div className={mode === "theory" && flip ? "glitch" : ""}>
           <p className="font-display text-sm text-paper tracking-wide">{identity.name}</p>
@@ -73,7 +62,7 @@ function TestimonialCard({ person, index }: { person: (typeof PEOPLE)[number]; i
         ))}
       </div>
       <p className={`font-serif italic text-sm text-paper/90 ${mode === "theory" && flip ? "glitch" : ""}`}>
-        "{identity.quote}"
+        &quot;{identity.quote}&quot;
       </p>
     </div>
   );
@@ -83,7 +72,11 @@ export default function Testimonials() {
   return (
     <section className="relative py-20 px-4 sm:px-6 bg-ink-2/40 border-y border-line">
       <div className="max-w-6xl mx-auto">
-        <Annotation label="Order III — Pretense of Reality" className="absolute right-2 sm:right-8 -top-4" align="right">
+        <Annotation
+          label="Order III — Pretense of Reality"
+          className="absolute right-2 sm:right-8 -top-4"
+          align="right"
+        >
           These testify to satisfaction with a product no one has received. The signature is authentic; what it signs for is not.
         </Annotation>
 
@@ -96,7 +89,7 @@ export default function Testimonials() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {PEOPLE.map((p, i) => (
+          {TESTIMONIALS.map((p, i) => (
             <TestimonialCard key={i} person={p} index={i} />
           ))}
         </div>

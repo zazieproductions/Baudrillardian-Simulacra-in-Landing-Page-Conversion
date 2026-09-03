@@ -1,10 +1,20 @@
 import { ShieldCheck } from "lucide-react";
 import Annotation from "./Annotation";
 
+/**
+ * The guarantee. It promises to restore a prior state that never existed —
+ * the joke being that a refund requires a referent, and there is none.
+ * Functionally a static section: no timers, no state, because the guarantee
+ * doesn't need to perform, it only needs to *reassure*.
+ */
 export default function Guarantee() {
   return (
     <section className="relative py-20 px-4 sm:px-6 bg-ink-2/40 border-y border-line">
-      <Annotation label="On Guarantees" className="absolute right-2 sm:right-12 top-2" align="right">
+      <Annotation
+        label="On Guarantees"
+        className="absolute right-2 sm:right-12 top-2"
+        align="right"
+      >
         A refund promises to restore a prior state. But there was no prior state — only the page, and then more page.
       </Annotation>
       <div className="max-w-2xl mx-auto text-center">
@@ -20,7 +30,7 @@ export default function Guarantee() {
           applicable law has not yet been written.
         </p>
         <p className="font-mono text-[10px] text-muted mt-6 tracking-wide uppercase">
-          no purchase is required for the guarantee to feel real. that's the whole guarantee.
+          no purchase is required for the guarantee to feel real. that&apos;s the whole guarantee.
         </p>
       </div>
     </section>

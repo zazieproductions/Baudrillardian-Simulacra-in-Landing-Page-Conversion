@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in THE PRODUCT™ isn't behaving as it should.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please include how to
+        reproduce and whether it happens in Simulation or Critique mode.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: A clear, concise description of the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Scroll to ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Simulation (default)
+        - Critique
+        - Both
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / OS
+      placeholder: e.g. Chrome 126 on macOS, Safari on iOS
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else?
+      description: Console output, screenshots, or context you think is relevant.

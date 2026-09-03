@@ -1,40 +1,26 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import Annotation from "./Annotation";
+import { FAQ_ITEMS } from "../content/faq";
 
-const ITEMS = [
-  {
-    q: "Is this a real product?",
-    a: "Does it need to be? The transaction clears either way. The confirmation email arrives regardless of referent.",
-  },
-  {
-    q: "What am I actually purchasing?",
-    a: "You are purchasing this page's belief in itself — packaged, priced, and made available for 30 more minutes, forever.",
-  },
-  {
-    q: "Will this work for me?",
-    a: "It worked for the 3,482 testimonials you already believed. Ask yourself why that number felt sufficient.",
-  },
-  {
-    q: "What if I'm not satisfied?",
-    a: "Dissatisfaction implies an original experience to be disappointed against. There isn't one to compare it to — which, functionally, is the same as a guarantee.",
-  },
-  {
-    q: "Why does the countdown timer never reach zero?",
-    a: "Because urgency is not a fact about time. It is a fact about design. The clock isn't measuring an expiration — it's producing one.",
-  },
-  {
-    q: "Who wrote the testimonials?",
-    a: "The same entity that will write yours, once you scroll back up and read that you already bought this.",
-  },
-];
-
+/**
+ * The "Frequently Suppressed Questions" accordion.
+ *
+ * A single open index is tracked; opening a new item closes the previous one.
+ * The reveal animation uses the CSS grid `grid-rows-[0fr] -> [1fr]` technique,
+ * which animates height without needing to measure content (no ResizeObserver,
+ * no layout thrash).
+ */
 export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="faq" className="relative py-24 px-4 sm:px-6">
-      <Annotation label="Objection Handling" className="absolute left-2 sm:left-10 -top-2" align="left">
+      <Annotation
+        label="Objection Handling"
+        className="absolute left-2 sm:left-10 -top-2"
+        align="left"
+      >
         Every FAQ pre-answers a doubt before you finish forming it. This is not transparency. It is pre-emption.
       </Annotation>
 
@@ -45,10 +31,11 @@ export default function FAQ() {
         </div>
 
         <div className="space-y-3">
-          {ITEMS.map((item, i) => (
+          {FAQ_ITEMS.map((item, i) => (
             <div key={i} className="border border-line rounded-lg overflow-hidden bg-ink-2/50">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
+                aria-expanded={open === i}
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
               >
                 <span className="font-display text-sm sm:text-base text-paper tracking-wide">{item.q}</span>

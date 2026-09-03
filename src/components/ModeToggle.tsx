@@ -1,5 +1,13 @@
-import { useMode } from "../lib/ModeContext";
+import { useMode } from "../lib/mode";
 
+/**
+ * The physical lever between the two registers of the piece.
+ *
+ * Left = Simulation (the funnel; the page sells). Right = Critique (the
+ * theory; the page reads itself). The toggle is a literal switch because
+ * the whole interface re-renders and re-colors around it, and flipping it
+ * should feel like flipping a mode on an instrument, not clicking a link.
+ */
 export default function ModeToggle() {
   const { mode, toggle } = useMode();
   const isTheory = mode === "theory";
@@ -16,6 +24,7 @@ export default function ModeToggle() {
       <button
         onClick={toggle}
         aria-label="Toggle between simulation and critique mode"
+        aria-pressed={isTheory}
         className="relative w-12 h-6 rounded-full border border-line bg-ink-2 flex items-center px-0.5 transition-colors"
       >
         <span

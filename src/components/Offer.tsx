@@ -1,23 +1,32 @@
 import { useEffect, useState } from "react";
 import { Check, Lock, TrendingUp } from "lucide-react";
 import Annotation from "./Annotation";
-import { useMode } from "../lib/ModeContext";
+import { useMode } from "../lib/mode";
+import {
+  CLAIM_TICK_MS,
+  DEADLINE_SECONDS,
+  INITIAL_CLAIMANTS,
+  OFFER_PRICE,
+  OFFER_STACK,
+  OFFER_TOTAL_VALUE,
+} from "../content/offer";
 
-const DEADLINE_SECONDS = 15 * 60;
-
-const STACK = [
-  { name: "The Core Method (a PDF describing this page, in this page)", value: 1997 },
-  { name: "Bonus: Belief Reinforcement Framework™", value: 997 },
-  { name: "Bonus: Access to a Community Confirming Your Purchase", value: 497 },
-  { name: "Bonus: This Exact Landing Page, Yours to Redeploy", value: 1506 },
-];
-
-const TOTAL = STACK.reduce((a, b) => a + b.value, 0);
-
+/**
+ * The offer. Order IV — Pure Simulacrum: it refers only to itself, "buy the
+ * page that sold you the page."
+ *
+ * Three fabricated clocks run here, each a different flavor of manufactured
+ * urgency:
+ * - `secondsLeft`: the countdown. On reaching zero it resets to full (the
+ *   scarcity is periodic, not finite).
+ * - `claimed`: a slowly-incrementing "people have claimed theirs" counter.
+ * - The "VERIFYING A PURCHASE" delay: a staged 1.6s processing state before
+ *   "ACCESS GRANTED".
+ */
 export default function Offer() {
   const { mode } = useMode();
   const [secondsLeft, setSecondsLeft] = useState(DEADLINE_SECONDS);
-  const [claimed, setClaimed] = useState(2847);
+  const [claimed, setClaimed] = useState(INITIAL_CLAIMANTS);
   const [step, setStep] = useState<"idle" | "processing" | "done">("idle");
 
   useEffect(() => {
@@ -30,7 +39,7 @@ export default function Offer() {
   useEffect(() => {
     const t = setInterval(() => {
       setClaimed((c) => c + Math.floor(Math.random() * 3));
-    }, 4000);
+    }, CLAIM_TICK_MS);
     return () => clearInterval(t);
   }, []);
 
@@ -44,17 +53,21 @@ export default function Offer() {
 
   return (
     <section id="offer" className="relative py-24 px-4 sm:px-6">
-      <Annotation label="Order IV — Pure Simulacrum" className="absolute left-2 sm:left-8 top-4" align="left">
+      <Annotation
+        label="Order IV — Pure Simulacrum"
+        className="absolute left-2 sm:left-8 top-4"
+        align="left"
+      >
         The offer refers only to itself: buy the page that sold you the page. There is no outside to exit to.
       </Annotation>
 
       <div className="max-w-3xl mx-auto text-center mb-10">
         <p className="font-mono text-[11px] tracking-widest uppercase text-red mb-3">The Offer</p>
         <h2 className="font-display text-3xl sm:text-5xl text-paper leading-tight">
-          WHAT YOU'RE <span className="text-yellow">ACTUALLY</span> BUYING
+          WHAT YOU&apos;RE <span className="text-yellow">ACTUALLY</span> BUYING
         </h2>
         <p className="font-serif italic text-muted mt-4 text-lg">
-          Lifetime access to this landing page. Yes — this one. The one you're reading right now.
+          Lifetime access to this landing page. Yes — this one. The one you&apos;re reading right now.
           Own the machine that just sold it to you.
         </p>
       </div>
@@ -84,7 +97,7 @@ export default function Offer() {
           </div>
 
           <div className="space-y-3 mb-6">
-            {STACK.map((item) => (
+            {OFFER_STACK.map((item) => (
               <div key={item.name} className="flex items-start justify-between gap-4 text-sm">
                 <span className="flex items-start gap-2 text-paper/90">
                   <Check size={15} className="text-yellow mt-0.5 shrink-0" />
@@ -97,11 +110,11 @@ export default function Offer() {
 
           <div className="border-t border-line pt-4 flex items-center justify-between mb-1">
             <span className="font-mono text-xs text-muted uppercase tracking-wide">Total Value</span>
-            <span className="font-mono text-muted paper-crossout">${TOTAL.toLocaleString()}</span>
+            <span className="font-mono text-muted paper-crossout">${OFFER_TOTAL_VALUE.toLocaleString()}</span>
           </div>
           <div className="flex items-center justify-between mb-6">
             <span className="font-display text-lg text-paper">Today Only</span>
-            <span className="font-display text-3xl text-yellow">$97</span>
+            <span className="font-display text-3xl text-yellow">${OFFER_PRICE}</span>
           </div>
 
           {step !== "done" ? (
@@ -130,7 +143,7 @@ export default function Offer() {
 
           <p className="flex items-center justify-center gap-1.5 font-mono text-[10px] text-muted mt-4">
             <TrendingUp size={12} />
-            {claimed.toLocaleString()} people have "claimed" theirs
+            {claimed.toLocaleString()} people have &quot;claimed&quot; theirs
             {mode === "theory" ? " (this number has never once gone down)" : " — join them"}
           </p>
         </div>
